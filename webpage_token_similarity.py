@@ -27,6 +27,8 @@ metaphor = Metaphor(os.getenv("METAPHOR_API_KEY"))
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
+# Jaccard Similarity, divides number of observations in both sets 
+# by the number of observations in either set
 def jaccard(list1, list2):
 	intersection = len(list(set(list1).intersection(list2)))
 	union = (len(list1) + len(list2)) - intersection
@@ -84,7 +86,7 @@ while i < len(contexts):
 selection = input()
 while not selection.isdigit():
 	print("Please enter the number for your selection, using an integer.")
-	selection = input
+	selection = input()
 
 USER_INPUT = contexts[int(selection)]
 
