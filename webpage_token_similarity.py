@@ -123,4 +123,4 @@ print(f"More opinions like this can be found at these webpages: "
 						f"{[(result.title, result.url) for result in opinion_contents]}\n")
 
 print(f"Find out more about the opposite of this opinion here: "
-						f"{[(result.title, result.url) for result in opinion_contents]}\n")
+						f"{[(result.title, result.url) for result in opposite_contents]}\n")
