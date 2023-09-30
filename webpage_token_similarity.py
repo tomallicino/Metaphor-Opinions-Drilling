@@ -9,7 +9,7 @@ import json
 import openai
 import os
 
-jac_threshold = .01
+jac_threshold = .1
 
 if len(sys.argv) < 2:
 	print("Please provide an argument containing a document's Metaphor hash!")
@@ -94,7 +94,7 @@ USER_INPUT = contexts[int(selection)]
 GPT_SYSTEM_MESSAGE = "You are an assistant that can help review the sentiment of a given text. " \
 					"Determine whether or not it contains an opinion and express the opinion concisely. " \
 					"Then, express the opposite of the opinion concisely. Include the subject of the text. " \
-					"Make the output JSON formatted."
+					"Make the output JSON formatted, with properties for the subject, sentiment, opinion, and opposite_opinion."
 opinion_completion = openai.ChatCompletion.create(
 	model="gpt-3.5-turbo",
 	messages=[
