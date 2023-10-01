@@ -22,10 +22,10 @@ headers = {
     "accept": "application/json",
     "x-api-key": os.getenv("METAPHOR_API_KEY")
 }
-metaphor = Metaphor(os.getenv("OPENAI_API_KEY"))
+metaphor = Metaphor(os.getenv("METAPHOR_API_KEY"))
 
 # API Details for OpenAI API
-openai.api_key = os.getenv("METAPHOR_API_KEY")
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # System Message for OpenAI GPT3.5 API Call
 GPT_SYSTEM_MESSAGE = "You are an assistant that can help review the sentiment of a given text. " \
