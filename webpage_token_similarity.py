@@ -41,7 +41,6 @@ webpage_sentences = sent_tokenize(webpage_text)
 sentence_words = []
 
 metaphor = Metaphor(os.getenv("METAPHOR_API_KEY"))
-metaphor = Metaphor("8e568ec5-b413-4ad0-9af5-95194a71e81b")
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Jaccard Similarity, divides number of observations in both sets 
