@@ -124,6 +124,7 @@ def get_opinions_openai(user_input):
     result = json.loads(opinion_completion.choices[0].message.content)
     return result
 
+# Search Metaphor for results about the opinion of the user selected context and its opposite
 def search_opinions_metaphor(opinion, opposite_opinion):
     search_response_opinion = metaphor.search(
     	opinion, use_autoprompt=True, start_published_date="2023-06-01"
