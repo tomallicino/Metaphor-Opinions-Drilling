@@ -8,6 +8,9 @@ import sys
 import json
 import openai
 import os
+import requests
+import re
+from bs4 import BeautifulSoup
 
 jac_threshold = .1
 
@@ -16,16 +19,30 @@ if len(sys.argv) < 2:
 	quit()
 
 webpage_hash = sys.argv[1]
+# Call the Metaphor content rest API with the hash that was passed in
+contents_api_url = "https://api.metaphor.systems/contents?ids=" + webpage_hash
 
-contents_result = Metaphor.get_contents([webpage_hash])
-webpage_text = contents_result.contents[0]
+headers = {
+    "accept": "application/json",
+    "x-api-key": os.getenv("METAPHOR_API_KEY")
+}
+contents_response = requests.get(contents_api_url, headers=headers).text
+content_json = json.loads(contents_response)
+html_text = content_json['contents'][0]['extract']
+
+# Clean HTML tags from the webpage content so we can tokenize
+def remove_html_tags(text):
+    clean = re.compile('<.*?>')
+    return re.sub(clean, '', text)
+
+webpage_text = remove_html_tags(html_text)
 
 webpage_sentences = sent_tokenize(webpage_text)
 sentence_words = []
 
 metaphor = Metaphor(os.getenv("METAPHOR_API_KEY"))
+metaphor = Metaphor("8e568ec5-b413-4ad0-9af5-95194a71e81b")
 openai.api_key = os.getenv("OPENAI_API_KEY")
-
 
 # Jaccard Similarity, divides number of observations in both sets 
 # by the number of observations in either set
@@ -44,6 +61,7 @@ sentence_positions = {}
 similar_sentences = {}
 
 # Compare each sentence using Jaccard Similarity, keep track of those whose similarity crosses our threshold
+# Saving sentence positions to highlight contexts in future iterations
 i = 0
 while i < len(sentence_words):
 	sentence_positions[word_index] = word_index + len(sentence_words[i]) - 1
@@ -59,22 +77,24 @@ while i < len(sentence_words):
 	word_index += len(sentence_words[i])
 	i += 1
 
-
 # Combine similar sentences, not including repeated similarities, filtered out with a set
 used_sentences = set()
 curr_sentence = ""
 contexts = []
+i = 0
 while i < len(webpage_sentences):
-	curr_sentence = webpage_sentences[i]
-	for j in similar_sentences.get(i):
-		if j in similar_sentences:
-			continue
-		curr_sentence += " " + webpage_sentences[j]
-		used_sentences.add(j)
+    curr_sentence = webpage_sentences[i]
+    j = 0
+    while j < len(similar_sentences.get(i)):
+	    if j in used_sentences:
+		    continue
+	    curr_sentence += " " + webpage_sentences[j]
+	    used_sentences.add(j)
+	    j += 1
 
-	contexts.append(curr_sentence)
-	used_sentences.add(i)
-	i += 1
+    contexts.append(curr_sentence)
+    used_sentences.add(i)
+    i += 1
 
 # Allow user to pick content to explore
 print(f"Here are each of the article's sentences organized by their context. \n"
