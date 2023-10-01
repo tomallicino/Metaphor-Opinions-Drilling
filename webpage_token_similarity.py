@@ -19,7 +19,7 @@ if len(sys.argv) < 2:
 	quit()
 
 webpage_hash = sys.argv[1]
-# Call the Metaphor content rest API with the hash that was passed in
+# Call the Metaphor content rest API endpoint with the hash that was passed in
 contents_api_url = "https://api.metaphor.systems/contents?ids=" + webpage_hash
 
 headers = {
@@ -28,6 +28,12 @@ headers = {
 }
 contents_response = requests.get(contents_api_url, headers=headers).text
 content_json = json.loads(contents_response)
+
+# Error handling in case the content is not found
+if 'error' in content_json:
+    print("Invalid Metaphor content hash!")
+    quit()
+
 html_text = content_json['contents'][0]['extract']
 
 # Clean HTML tags from the webpage content so we can tokenize
@@ -84,25 +90,39 @@ i = 0
 while i < len(webpage_sentences):
     curr_sentence = webpage_sentences[i]
     j = 0
-    while j < len(similar_sentences.get(i)):
-	    if j in used_sentences:
-		    continue
-	    curr_sentence += " " + webpage_sentences[j]
-	    used_sentences.add(j)
-	    j += 1
+    curr_similar_sentences = similar_sentences.get(i)
+
+    if not curr_similar_sentences:
+        i += 1
+        contexts.append(curr_sentence)
+        used_sentences.add(i)
+        continue
+
+    while j < len(curr_similar_sentences):
+        if j in used_sentences:
+	        j += 1
+	        continue
+
+        curr_sentence += " " + webpage_sentences[j]
+        used_sentences.add(j)
+        j += 1
 
     contexts.append(curr_sentence)
     used_sentences.add(i)
     i += 1
 
 # Allow user to pick content to explore
-print(f"Here are each of the article's sentences organized by their context. \n"
-						f"Please select one of them to learn more about it:\n")
+
+
+i = 0
 while i < len(contexts):
 	print(f"{i}. " + contexts[i])
 	i += 1
 
+print(f"Here are each of the article's sentences organized by their context. \n"
+						f"Please select one of them to learn more about it:\n")
 selection = input()
+# Error handling to ensure the selection is valid
 while not selection.isdigit():
 	print("Please enter the number for your selection, using an integer.")
 	selection = input()
