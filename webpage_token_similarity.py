@@ -135,15 +135,12 @@ def search_opinions_metaphor(opinion, opposite_opinion):
     	    opinion, use_autoprompt=True, start_published_date="2023-06-01"
         )
         search_response_opposite = metaphor.search(
-            	opposite_opinion, use_autoprompt=True, start_published_date="2023-06-01"
+            opposite_opinion, use_autoprompt=True, start_published_date="2023-06-01"
         )
     except:
         print("Error: could not complete Metaphor search request!")
         quit()
 
-    search_response_opposite = metaphor.search(
-    	opposite_opinion, use_autoprompt=True, start_published_date="2023-06-01"
-    )
     opinion_contents = search_response_opinion.results
     opposite_contents = search_response_opposite.results
     return opinion_contents, opposite_contents
