@@ -137,13 +137,12 @@ def search_opinions_metaphor(opinion, opposite_opinion):
         search_response_opposite = metaphor.search(
             opposite_opinion, use_autoprompt=True, start_published_date="2023-06-01"
         )
+        opinion_contents = search_response_opinion.results
+        opposite_contents = search_response_opposite.results
+        return opinion_contents, opposite_contents
     except:
         print("Error: could not complete Metaphor search request!")
         quit()
-
-    opinion_contents = search_response_opinion.results
-    opposite_contents = search_response_opposite.results
-    return opinion_contents, opposite_contents
 
 # Error handling, will quit if there is not a content hash
 if len(sys.argv) < 2:
