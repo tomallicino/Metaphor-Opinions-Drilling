@@ -78,7 +78,7 @@ def discover_similar_sentences(sentence_words):
 
     	word_index += len(sentence_words[i])
     	i += 1
-    	return similar_sentences, sentence_positions
+    return similar_sentences, sentence_positions
 
 # Combine similar sentences, not including repeated similarities, filtered out with a set
 def combine_contexts(similar_sentences, webpage_sentences):
