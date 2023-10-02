@@ -113,22 +113,33 @@ def combine_contexts(similar_sentences, webpage_sentences):
 
 # Call OpenAI GPT3.5 API to get the opinion and its opposite
 def get_opinions_openai(user_input):
-    opinion_completion = openai.ChatCompletion.create(
-    	model="gpt-3.5-turbo",
-    	messages=[
-    		{"role": "system", "content": GPT_SYSTEM_MESSAGE},
-    		{"role": "user", "content": user_input},
-    	],
-    )
+    try:
+        opinion_completion = openai.ChatCompletion.create(
+    	    model="gpt-3.5-turbo",
+    	    messages=[
+    		    {"role": "system", "content": GPT_SYSTEM_MESSAGE},
+    		    {"role": "user", "content": user_input},
+    	    ],
+        )
+    except:
+        print("Error: could not complete OpenAI request!")
+        quit()
 
     result = json.loads(opinion_completion.choices[0].message.content)
     return result
 
 # Search Metaphor for results about the opinion of the user selected context and its opposite
 def search_opinions_metaphor(opinion, opposite_opinion):
-    search_response_opinion = metaphor.search(
-    	opinion, use_autoprompt=True, start_published_date="2023-06-01"
-    )
+    try:
+        search_response_opinion = metaphor.search(
+    	    opinion, use_autoprompt=True, start_published_date="2023-06-01"
+        )
+        search_response_opposite = metaphor.search(
+            	opposite_opinion, use_autoprompt=True, start_published_date="2023-06-01"
+        )
+    except:
+        print("Error: could not complete Metaphor search request!")
+        quit()
 
     search_response_opposite = metaphor.search(
     	opposite_opinion, use_autoprompt=True, start_published_date="2023-06-01"
@@ -171,7 +182,11 @@ while not selection.isdigit():
 	print("Please enter the number for your selection, using an integer.")
 	selection = input()
 
-user_context_input = contexts[int(selection)]
+try:
+    user_context_input = contexts[int(selection)]
+except:
+    print("Error: invalid user input!")
+    quit()
 
 # Call OpenAI GPT3.5 API to get opinion and its opposite in JSON format
 openai_opinion_result = get_opinions_openai(user_context_input)
